@@ -67,9 +67,10 @@ def main():
     while True:
         # Print board
         clear()
-        sys.stdout.write('{0}\n'.format(view))
-        sys.stdout.write('Black: {black} <===> White: {white}\n'.format(**board.score))
-        sys.stdout.write('{0}\'s move... \n\n'.format(board.turn))
+        print('{0}\'s turn...\n'.format(board.turn))
+        print('{0}\n'.format(view))
+        print('Black\'s Points: {black}\nWhite\'s Points: {white}\n'.
+              format(**board.score))
 
         if err:
             sys.stdout.write('\n' + err + '\n')
@@ -82,8 +83,7 @@ def main():
             # Execute selected action
             KEYS[c]()
         except BoardError as be:
-            # Board error (move on top of other piece, suicidal move, etc.)
-            err = be.message
+            pass
         except KeyError:
             # Action not found, do nothing
             pass
