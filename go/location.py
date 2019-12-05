@@ -5,8 +5,8 @@ class LocationError(Exception):
 
 class Location(object):
     TYPES = {
-        'black': '\033[1m' + "*" + '\033[0m',
-        'white': '\033[1m' + "o" + '\033[0m',
+        'black': '●',
+        'white': '○',
         'empty': '.',
     }
 

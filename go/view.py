@@ -111,4 +111,4 @@ class View(Array):
         if self._cursor:
             arr[self._cursor] = self.CURSOR
 
-        return '\n'.join([' '.join(row) for row in arr._array])
+        return '\n\n'.join(['    '.join(row) for row in arr._array])

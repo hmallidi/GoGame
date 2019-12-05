@@ -7,18 +7,18 @@ from go import Board, BoardError, View, clear, getch
 
 
 def main():
-    # Get arguments
-    parser = argparse.ArgumentParser(description='Starts a game of go in the terminal.')
-    parser.add_argument('-s', '--size', type=int, default=19, help='size of board')
+    print("We are going to play a game of Go.")
 
-    args = parser.parse_args()
+    board_size = 0
 
-    if args.size < 7 or args.size > 19:
-        sys.stdout.write('Board size must be between 7 and 19!\n')
-        sys.exit(0)
+    while(board_size != 9 and board_size != 13 and board_size != 19):
+        try:
+            board_size = int(input("Please input a board size (9, 13, 19): "))
+        except ValueError:
+            pass
 
     # Initialize board and view
-    board = Board(args.size)
+    board = Board(board_size)
     view = View(board)
     err = None
 
