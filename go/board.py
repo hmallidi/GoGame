@@ -24,8 +24,8 @@ class Board(Array):
 
     State = namedtuple('State', ['board', 'turn', 'score'])
 
-    def __init__(self, width):
-        super(Board, self).__init__(width, width, self.EMPTY)
+    def __init__(self, size):
+        super(Board, self).__init__(size, size, self.EMPTY)
 
         # Turn counter
         self._turn = self.BLACK

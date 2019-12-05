@@ -6,17 +6,12 @@ from .board import Board
 
 class View(Array):
     """
-    Stores string array which is used to paint the board.  Also stores cursor
-    position.
+    Stores string array which is used to paint the board.
     """
     HOSHI = '+'
 
-    CURSOR = 'X'
-
     def __init__(self, board):
         self._board = board
-        self._cursor = (1, 1)
-
         self._hoshis = self._get_hoshis(board._width)
 
         super(View, self).__init__(
@@ -77,38 +72,7 @@ class View(Array):
     def _in_height(self, v):
         return max(1, min(self._height, v))
 
-    def cursor_up(self):
-        self._cursor = (
-            self._in_width(self._cursor[0]),
-            self._in_height(self._cursor[1] - 1),
-        )
-
-    def cursor_down(self):
-        self._cursor = (
-            self._in_width(self._cursor[0]),
-            self._in_height(self._cursor[1] + 1),
-        )
-
-    def cursor_left(self):
-        self._cursor = (
-            self._in_width(self._cursor[0] - 1),
-            self._in_height(self._cursor[1]),
-        )
-
-    def cursor_right(self):
-        self._cursor = (
-            self._in_width(self._cursor[0] + 1),
-            self._in_height(self._cursor[1]),
-        )
-
-    @property
-    def cursor(self):
-        return self._cursor
-
     def __str__(self):
         arr = self.copy
-
-        if self._cursor:
-            arr[self._cursor] = self.CURSOR
 
         return '\n\n'.join(['    '.join(row) for row in arr._array])

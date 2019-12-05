@@ -2,8 +2,14 @@
 
 import argparse
 import sys
+import platform
+import subprocess
 
-from go import Board, BoardError, View, clear, getch
+from go import Board, BoardError, View
+
+
+def clear():
+    subprocess.check_call('cls' if platform.system() == 'Windows' else 'clear', shell=True)
 
 
 def main():
@@ -23,12 +29,11 @@ def main():
     err = None
 
     # User actions
-    def move():
+    def move(x,  y):
         """
-        Makes a move at the current position of the cursor for the current
-        turn.
+        Makes a move at the given coordinates.
         """
-        board.move(*view.cursor)
+        board.move(x, y)
         view.redraw()
 
     def undo():
@@ -51,22 +56,10 @@ def main():
         """
         sys.exit(0)
 
-    # Action keymap
-    KEYS = {
-        'w': view.cursor_up,
-        's': view.cursor_down,
-        'a': view.cursor_left,
-        'd': view.cursor_right,
-        ' ': move,
-        'u': undo,
-        'r': redo,
-        '\x1b': exit,
-    }
-
     # Main loop
     while True:
-        # Print board
         clear()
+
         print('{0}\'s turn...\n'.format(board.turn))
         print('{0}\n'.format(view))
         print('Black\'s Points: {black}\nWhite\'s Points: {white}\n'.
@@ -76,16 +69,16 @@ def main():
             sys.stdout.write('\n' + err + '\n')
             err = None
 
-        # Get action key
-        c = getch()
-
         try:
-            # Execute selected action
-            KEYS[c]()
-        except BoardError as be:
+            x = int(input("Please input the x coordinate: "))
+            y = int(input("Please input the y coordinate: "))
+
+            move(x, y)
+        except BoardError:
             pass
         except KeyError:
-            # Action not found, do nothing
+            pass
+        except ValueError:
             pass
 
 

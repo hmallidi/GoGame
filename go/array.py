@@ -7,8 +7,8 @@ class ArrayError(Exception):
 
 class Array(object):
     def __init__(self, width, height, empty=None):
-        self._width = width
-        self._height = height
+        self._width = width + 1
+        self._height = height + 1
         self._empty = empty
 
         self._reset()
