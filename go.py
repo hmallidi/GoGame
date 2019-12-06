@@ -4,6 +4,7 @@ import argparse
 import sys
 import platform
 import subprocess
+import time
 
 from go import Board, BoardError, View
 
@@ -36,25 +37,21 @@ def main():
         board.move(x, y)
         view.redraw()
 
-    def undo():
-        """
-        Undoes the last move.
-        """
-        board.undo()
-        view.redraw()
-
-    def redo():
-        """
-        Redoes an undone move.
-        """
-        board.redo()
-        view.redraw()
-
-    def exit():
+    def end_game():
         """
         Exits the game.
         """
+        clear()
+        print('Black\'s Points: {black}\nWhite\'s Points: {white}\n'.
+              format(**board.score))
+        print("\nThe game has ended.")
+        time.sleep(5)
         sys.exit(0)
+
+    PASSED = {
+            "Black": False,
+            "White": False
+    }
 
     # Main loop
     while True:
@@ -70,16 +67,21 @@ def main():
             err = None
 
         try:
+            print("Input coordinates (0, 0) if you wish to pass the turn. The game ends when both players pass consecutively.\n")
             x = int(input("Please input the x coordinate: "))
             y = int(input("Please input the y coordinate: "))
 
+            if (x == 0 and y == 0):
+                PASSED[str(board.turn)] = True
+                time.sleep(1)
+                if (PASSED["Black"] is True and PASSED["White"] is True):
+                    end_game()
             move(x, y)
-        except BoardError:
-            pass
-        except KeyError:
-            pass
-        except ValueError:
-            pass
+            PASSED[str(board.turn)] = False
+
+        except(BoardError, KeyError, ValueError) as error:
+            print("\n" + str(error))
+            time.sleep(2)
 
 
 if __name__ == '__main__':

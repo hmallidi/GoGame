@@ -1,7 +1,7 @@
 from collections import namedtuple
 from copy import copy
 
-from .array import Array, ArrayError
+from .array import Array
 from .location import Location
 
 
@@ -68,6 +68,10 @@ class Board(Array):
         """
         Makes a move at the given location for the current turn's color.
         """
+        if (x == 0 and y == 0):
+            self._flip_turn()
+            return
+
         # Check if coordinates are occupied
         if self[x, y] is not self.EMPTY:
             raise BoardError('Cannot move on top of another piece!')
@@ -163,28 +167,6 @@ class Board(Array):
         except IndexError:
             return None
 
-    def undo(self):
-        """
-        Undoes one move.
-        """
-        state = self._pop_history()
-        if state:
-            self._redo.append(state)
-            return state
-        else:
-            raise BoardError('No moves to undo!')
-
-    def redo(self):
-        """
-        Re-applies one move that was undone.
-        """
-        try:
-            self._push_history()
-            self._load_state(self._redo.pop())
-        except IndexError:
-            self._pop_history()
-            raise BoardError('No undone moves to redo!')
-
     def _tally(self, score):
         """
         Adds points to the current turn's score.
@@ -198,7 +180,7 @@ class Board(Array):
         """
         try:
             return self[x, y]
-        except ArrayError:
+        except ValueError:
             return None
 
     def _get_surrounding(self, x, y):

@@ -1,14 +1,10 @@
 from copy import copy
 
 
-class ArrayError(Exception):
-    pass
-
-
 class Array(object):
     def __init__(self, width, height, empty=None):
-        self._width = width + 1
-        self._height = height + 1
+        self._width = width
+        self._height = height
         self._empty = empty
 
         self._reset()
@@ -28,21 +24,21 @@ class Array(object):
             y < 1 or
             y > self._height
         ):
-            raise ArrayError('Index is not within array dimensions {w}x{h}'.format(
+            raise ValueError('Index ({x}, {y}) is not within board dimensions {w}x{h}'.format(
                 x=x, y=y, w=self._width, h=self._height
             ))
 
     def _zero_index(cls, x, y):
         return x - 1, y - 1
 
-    def __getitem__(self, i):
-        self._check_index(*i)
-        x, y = self._zero_index(*i)
+    def __getitem__(self, coordinates):
+        self._check_index(*coordinates)
+        x, y = self._zero_index(*coordinates)
         return self._array[y][x]
 
-    def __setitem__(self, i, value):
-        self._check_index(*i)
-        x, y = self._zero_index(*i)
+    def __setitem__(self, coordinates, value):
+        self._check_index(*coordinates)
+        x, y = self._zero_index(*coordinates)
         self._array[y][x] = value
 
     def __eq__(self, other):
