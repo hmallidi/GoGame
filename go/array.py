@@ -9,6 +9,24 @@ class Array(object):
 
         self._reset()
 
+    def _check_valid(self, x, y):
+        if (x < 0 or x >= self._width or y < 0 or y >= self._height):
+            raise ValueError('Coordinates ({}, {}) are out of bounds'.format(x + 1, y + 1))
+
+    def __getitem__(self, coordinates):
+        x, y = coordinates
+        x, y = x - 1, y - 1
+
+        self._check_valid(x, y)
+        return self._array[y][x]
+
+    def __setitem__(self, coordinates, value):
+        x, y = coordinates
+        x, y = x - 1, y - 1
+
+        self._check_valid(x, y)
+        self._array[y][x] = value
+
     def _reset(self, value=None):
         value = value or self._empty
 
@@ -16,33 +34,6 @@ class Array(object):
             [value for i in range(self._width)]
             for j in range(self._height)
         ]
-
-    def _check_index(self, x, y):
-        if (
-            x < 1 or
-            x > self._width or
-            y < 1 or
-            y > self._height
-        ):
-            raise ValueError('Index ({x}, {y}) is not within board dimensions {w}x{h}'.format(
-                x=x, y=y, w=self._width, h=self._height
-            ))
-
-    def _zero_index(cls, x, y):
-        return x - 1, y - 1
-
-    def __getitem__(self, coordinates):
-        self._check_index(*coordinates)
-        x, y = self._zero_index(*coordinates)
-        return self._array[y][x]
-
-    def __setitem__(self, coordinates, value):
-        self._check_index(*coordinates)
-        x, y = self._zero_index(*coordinates)
-        self._array[y][x] = value
-
-    def __eq__(self, other):
-        return self._array == other._array
 
     @property
     def copy(self):

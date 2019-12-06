@@ -6,7 +6,7 @@ import platform
 import subprocess
 import time
 
-from go import Board, BoardError, View
+from go import Board, View
 
 
 def clear():
@@ -42,8 +42,7 @@ def main():
         Exits the game.
         """
         clear()
-        print('Black\'s Points: {black}\nWhite\'s Points: {white}\n'.
-              format(**board.score))
+        print('Black\'s Points: {}\nWhite\'s Points: {}\n'.format(*board.score))
         print("\nThe game has ended.")
         time.sleep(5)
         sys.exit(0)
@@ -57,10 +56,9 @@ def main():
     while True:
         clear()
 
-        print('{0}\'s turn...\n'.format(board.turn))
-        print('{0}\n'.format(view))
-        print('Black\'s Points: {black}\nWhite\'s Points: {white}\n'.
-              format(**board.score))
+        print('{}\'s turn...\n'.format(board.turn_name))
+        print('{}\n'.format(view))
+        print('Black\'s Points: {}\nWhite\'s Points: {}\n'.format(*board.score))
 
         if err:
             sys.stdout.write('\n' + err + '\n')
@@ -72,14 +70,14 @@ def main():
             y = int(input("Please input the y coordinate: "))
 
             if (x == 0 and y == 0):
-                PASSED[str(board.turn)] = True
+                PASSED[str(board.turn_name)] = True
                 time.sleep(1)
                 if (PASSED["Black"] is True and PASSED["White"] is True):
                     end_game()
             move(x, y)
-            PASSED[str(board.turn)] = False
+            PASSED[str(board.turn_name)] = False
 
-        except(BoardError, KeyError, ValueError) as error:
+        except(KeyError, ValueError) as error:
             print("\n" + str(error))
             time.sleep(2)
 

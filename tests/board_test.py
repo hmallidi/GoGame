@@ -90,7 +90,7 @@ class BoardTest(unittest.TestCase):
         ])
 
         self.assertTrue(self.bo._turn is b)
-        self.assertEqual(self.bo._score, {b: 0, w: 0})
+        self.assertEqual(self.bo._scores, {b: 0, w: 0})
         self.assertEqual(self.bo._history, [])
         self.assertEqual(self.bo._redo, [])
 
@@ -154,16 +154,16 @@ class BoardTest(unittest.TestCase):
         self.bo.move(3, 3)
         self.assertTrue(self.bo._next_turn is b)
 
-    def test_flip_turn(self):
+    def test_change_turn(self):
         b = Board.BLACK
         w = Board.WHITE
 
         self.assertEqual(self.bo._turn, b)
-        self.bo._flip_turn()
+        self.bo._change_turn()
         self.assertEqual(self.bo._turn, w)
-        self.bo._flip_turn()
+        self.bo._change_turn()
         self.assertEqual(self.bo._turn, b)
-        self.bo._flip_turn()
+        self.bo._change_turn()
         self.assertEqual(self.bo._turn, w)
 
     def test_state(self):
@@ -539,25 +539,25 @@ class BoardTest(unittest.TestCase):
             (18, 16), (18, 18), (18, 19)
         ]))
 
-    def test_count_liberties(self):
+    def test_get_num_liberties(self):
         bo = self.get_test_board_1()[0]
 
         # Assert empty location returns self as liberty (count 1)
-        self.assertEqual(bo.count_liberties(3, 1), 1)
+        self.assertEqual(bo.get_num_liberties(3, 1), 1)
 
         # Assert correct upper-left groups
-        self.assertEqual(bo.count_liberties(1, 1), 3)
-        self.assertEqual(bo.count_liberties(2, 1), 3)
-        self.assertEqual(bo.count_liberties(2, 3), 6)
-        self.assertEqual(bo.count_liberties(5, 2), 3)
-        self.assertEqual(bo.count_liberties(5, 3), 0)
-        self.assertEqual(bo.count_liberties(8, 3), 7)
-        self.assertEqual(bo.count_liberties(2, 7), 3)
-        self.assertEqual(bo.count_liberties(2, 6), 14)
+        self.assertEqual(bo.get_num_liberties(1, 1), 3)
+        self.assertEqual(bo.get_num_liberties(2, 1), 3)
+        self.assertEqual(bo.get_num_liberties(2, 3), 6)
+        self.assertEqual(bo.get_num_liberties(5, 2), 3)
+        self.assertEqual(bo.get_num_liberties(5, 3), 0)
+        self.assertEqual(bo.get_num_liberties(8, 3), 7)
+        self.assertEqual(bo.get_num_liberties(2, 7), 3)
+        self.assertEqual(bo.get_num_liberties(2, 6), 14)
 
         # # Assert correct lower-right groups
-        self.assertEqual(bo.count_liberties(11, 13), 14)
-        self.assertEqual(bo.count_liberties(14, 13), 13)
+        self.assertEqual(bo.get_num_liberties(11, 13), 14)
+        self.assertEqual(bo.get_num_liberties(14, 13), 13)
 
     def test_move(self):
         bo = self.get_test_board_2()[0]
