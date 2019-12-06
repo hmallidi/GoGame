@@ -13,6 +13,8 @@ class Board(Array):
     WHITE = '●'
     EMPTY = '.'
 
+    TURNS = (BLACK, WHITE)
+
     State = namedtuple('State', ['board', 'turn', 'score'])
 
     def __init__(self, size):
@@ -31,33 +33,21 @@ class Board(Array):
 
     @property
     def turn_name(self):
-        """
-        Gets the current turn.
-        """
         if (self._curr_turn == self.BLACK):
             return "Black"
         return "White"
 
     @property
     def _next_turn(self):
-        """
-        Gets color of next turn.
-        """
         if (self._curr_turn == self.BLACK):
             return self.WHITE
         return self.BLACK
 
     @property
     def score(self):
-        """
-        Gets the current score.
-        """
         return self._scores[self.BLACK], self._scores[self.WHITE]
 
     def move(self, x, y):
-        """
-        Makes a move at the given location for the current turn's color.
-        """
         if (x == 0 and y == 0):
             self._change_turn()
             return
@@ -69,32 +59,21 @@ class Board(Array):
         self._push_history()
         self[x, y] = self._curr_turn
 
-        # Check if any pieces have been taken
         taken = self._take_pieces(x, y)
 
-        # Check if move is suicidal.  A suicidal move is a move that takes no
-        # pieces and is played on a coordinate which has no liberties.
         if taken == 0:
             self._check_if_suicidal(x, y)
 
-        # Check if move is redundant.  A redundant move is one that would
-        # return the board to the state at the time of a player's last move.
         self._check_for_ko()
 
         self._change_turn()
 
     def _check_if_suicidal(self, x, y):
-        """
-        Checks if move is suicidal.
-        """
         if self.get_num_liberties(x, y) == 0:
             self._pop_history()
-            raise ValueError('There are no liberties at that location!')
+            raise ValueError('Suicidal Move! There are no liberties there!')
 
     def _check_for_ko(self):
-        """
-        Checks if board state is redundant.
-        """
         try:
             if self._array == self._history[-2][0]:
                 self._pop_history()
@@ -104,11 +83,6 @@ class Board(Array):
             pass
 
     def _take_pieces(self, x, y):
-        """
-        Checks if any pieces were taken by the last move at the specified
-        coordinates.  If so, removes them from play and tallies resulting
-        points.
-        """
         scores = []
         for p, (x1, y1) in self._get_surrounding(x, y):
             # If location is opponent's color and has no liberties, tally it up
@@ -124,27 +98,15 @@ class Board(Array):
 
     @property
     def _state(self):
-        """
-        Returns the game state as a named tuple.
-        """
         return self.State(self.copy._array, self._curr_turn, copy(self._scores))
 
     def _load_state(self, state):
-        """
-        Loads the specified game state.
-        """
         self._array, self._curr_turn, self._scores = state
 
     def _push_history(self):
-        """
-        Pushes game state onto history.
-        """
         self._history.append(self._state)
 
     def _pop_history(self):
-        """
-        Pops and loads game state from history.
-        """
         current_state = self._state
         try:
             self._load_state(self._history.pop())
@@ -153,27 +115,15 @@ class Board(Array):
             return None
 
     def _tally(self, score):
-        """
-        Adds points to the current turn's score.
-        """
         self._scores[self._curr_turn] += score
 
     def _get_none(self, x, y):
-        """
-        Same thing as Array.__getitem__, but returns None if coordinates are
-        not within array dimensions.
-        """
         try:
             return self[x, y]
         except ValueError:
             return None
 
     def _get_surrounding(self, x, y):
-        """
-        Gets information about the surrounding locations for a specified
-        coordinate.  Returns a tuple of the locations clockwise starting from
-        the top.
-        """
         coords = (
             (x, y - 1),
             (x + 1, y),
@@ -186,10 +136,6 @@ class Board(Array):
         ])
 
     def _get_group(self, x, y, traversed):
-        """
-        Recursively traverses adjacent locations of the same color to find all
-        locations which are members of the same group.
-        """
         loc = self[x, y]
 
         # Get surrounding locations which have the same color and whose
@@ -213,20 +159,12 @@ class Board(Array):
             return traversed
 
     def get_group(self, x, y):
-        """
-        Gets the coordinates for all locations which are members of the same
-        group as the location at the given coordinates.
-        """
         if self[x, y] not in self.TURNS:
             raise ValueError('Can only get group for black or white location')
 
         return self._get_group(x, y, set())
 
     def _kill_group(self, x, y):
-        """
-        Kills a group of black or white pieces and returns its size for
-        scoring.
-        """
         if self[x, y] not in self.TURNS:
             raise ValueError('Can only kill black or white group')
 
@@ -239,10 +177,6 @@ class Board(Array):
         return score
 
     def _get_liberties(self, x, y, traversed):
-        """
-        Recursively traverses adjacent locations of the same color to find all
-        surrounding liberties for the group at the given coordinates.
-        """
         loc = self[x, y]
 
         if loc is self.EMPTY:
@@ -270,15 +204,7 @@ class Board(Array):
                 return set()
 
     def get_liberties(self, x, y):
-        """
-        Gets the coordinates for liberties surrounding the group at the given
-        coordinates.
-        """
         return self._get_liberties(x, y, set())
 
     def get_num_liberties(self, x, y):
-        """
-        Gets the number of liberties surrounding the group at the given
-        coordinates.
-        """
         return len(self.get_liberties(x, y))

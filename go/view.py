@@ -73,6 +73,4 @@ class View(Array):
         return max(1, min(self._height, v))
 
     def __str__(self):
-        arr = self.copy
-
-        return '\n\n'.join(['    '.join(row) for row in arr._array])
+        return '\n\n'.join(['    '.join(row) for row in self._array])

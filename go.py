@@ -56,7 +56,7 @@ def main():
     while True:
         clear()
 
-        print('{}\'s turn...\n'.format(board.turn_name))
+        print('It is {}\'s turn.\n'.format(board.turn_name))
         print('{}\n'.format(view))
         print('Black\'s Points: {}\nWhite\'s Points: {}\n'.format(*board.score))
 
