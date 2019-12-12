@@ -142,17 +142,17 @@ class BoardTest(unittest.TestCase):
             'white': 0,
         })
 
-    def test_next_turn(self):
+    def testnext_turn(self):
         b = Board.BLACK
         w = Board.WHITE
 
-        self.assertTrue(self.bo._next_turn is w)
+        self.assertTrue(self.bo.next_turn is w)
         self.bo.move(1, 1)
-        self.assertTrue(self.bo._next_turn is b)
+        self.assertTrue(self.bo.next_turn is b)
         self.bo.move(2, 2)
-        self.assertTrue(self.bo._next_turn is w)
+        self.assertTrue(self.bo.next_turn is w)
         self.bo.move(3, 3)
-        self.assertTrue(self.bo._next_turn is b)
+        self.assertTrue(self.bo.next_turn is b)
 
     def test_change_turn(self):
         b = Board.BLACK
@@ -305,13 +305,13 @@ class BoardTest(unittest.TestCase):
         self.assertEqual(self.bo._history, [state1])
         self.assertEqual(self.bo._redo, [])
 
-    def test_tally(self):
+    def test_add_to_score(self):
         self.assertEqual(self.bo.score, {
             'black': 0,
             'white': 0,
         })
 
-        self.bo._tally(100)
+        self.bo._add_to_score(100)
 
         self.assertEqual(self.bo.score, {
             'black': 100,
@@ -319,7 +319,7 @@ class BoardTest(unittest.TestCase):
         })
 
         self.bo.move(3, 3)
-        self.bo._tally(100)
+        self.bo._add_to_score(100)
 
         self.assertEqual(self.bo.score, {
             'black': 100,

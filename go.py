@@ -27,7 +27,7 @@ def main():
     # Initialize board and view
     board = Board(board_size)
     view = View(board)
-    err = None
+    error = None
 
     # User actions
     def move(x,  y):
@@ -42,7 +42,10 @@ def main():
         Exits the game.
         """
         clear()
-        print('Black\'s Points: {}\nWhite\'s Points: {}\n'.format(*board.score))
+
+        black_score, white_score = board.get_score()
+        print('Black\'s Points: {}\nWhite\'s Points: {}\n'.format(black_score, 
+                                                                  white_score))
         print("\nThe game has ended.")
         time.sleep(5)
         sys.exit(0)
@@ -56,13 +59,16 @@ def main():
     while True:
         clear()
 
-        print('It is {}\'s turn.\n'.format(board.turn_name))
+        print('It is {}\'s turn.\n'.format(board.get_turn_name()))
         print('{}\n'.format(view))
-        print('Black\'s Points: {}\nWhite\'s Points: {}\n'.format(*board.score))
 
-        if err:
-            sys.stdout.write('\n' + err + '\n')
-            err = None
+        black_score, white_score = board.get_score()
+        print('Black\'s Points: {}\nWhite\'s Points: {}\n'.format(black_score,
+                                                                  white_score))
+
+        if error is not None:
+            print('\n' + error + '\n')
+            error = None
 
         try:
             print("Input coordinates (0, 0) if you wish to pass the turn. The game ends when both players pass consecutively.\n")
@@ -70,15 +76,15 @@ def main():
             y = int(input("Please input the y coordinate: "))
 
             if (x == 0 and y == 0):
-                PASSED[str(board.turn_name)] = True
+                PASSED[str(board.get_turn_name())] = True
                 time.sleep(1)
                 if (PASSED["Black"] is True and PASSED["White"] is True):
                     end_game()
             move(x, y)
-            PASSED[str(board.turn_name)] = False
+            PASSED[str(board.get_turn_name())] = False
 
-        except(KeyError, ValueError) as error:
-            print("\n" + str(error))
+        except(KeyError, ValueError) as errorMessage:
+            print("\n" + str(errorMessage))
             time.sleep(2)
 
 

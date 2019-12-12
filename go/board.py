@@ -5,10 +5,6 @@ from .array import Array
 
 
 class Board(Array):
-    """
-    Stores board locations.  Provides methods to carry out game logic.
-    """
-
     BLACK = '○'
     WHITE = '●'
     EMPTY = '.'
@@ -20,7 +16,6 @@ class Board(Array):
     def __init__(self, size):
         super(Board, self).__init__(size, size, self.EMPTY)
 
-        # Player scores
         self._scores = {
             self.BLACK: 0,
             self.WHITE: 0,
@@ -28,23 +23,14 @@ class Board(Array):
 
         self._curr_turn = self.BLACK
 
-        # Game history
         self._history = []
 
-    @property
-    def turn_name(self):
+    def get_turn_name(self):
         if (self._curr_turn == self.BLACK):
             return "Black"
         return "White"
 
-    @property
-    def _next_turn(self):
-        if (self._curr_turn == self.BLACK):
-            return self.WHITE
-        return self.BLACK
-
-    @property
-    def score(self):
+    def get_score(self):
         return self._scores[self.BLACK], self._scores[self.WHITE]
 
     def move(self, x, y):
@@ -55,17 +41,15 @@ class Board(Array):
         if self[x, y] is not self.EMPTY:
             raise ValueError('Piece is already at those coordinates!')
 
-        # Store history and make move
         self._push_history()
         self[x, y] = self._curr_turn
 
-        taken = self._take_pieces(x, y)
+        num_pieces_captured = self._take_pieces(x, y)
 
-        if taken == 0:
+        if num_pieces_captured == 0:
             self._check_if_suicidal(x, y)
 
         self._check_for_ko()
-
         self._change_turn()
 
     def _check_if_suicidal(self, x, y):
@@ -84,17 +68,25 @@ class Board(Array):
 
     def _take_pieces(self, x, y):
         scores = []
-        for p, (x1, y1) in self._get_surrounding(x, y):
-            # If location is opponent's color and has no liberties, tally it up
-            if p is self._next_turn and self.get_num_liberties(x1, y1) == 0:
+
+        opponent_piece_color = None
+        if (self._curr_turn == self.BLACK):
+            opponent_piece_color = self.WHITE
+        else:
+            opponent_piece_color = self.BLACK
+
+        for piece, (x1, y1) in self._get_surrounding(x, y):
+            if piece is opponent_piece_color and self.get_num_liberties(x1, y1) == 0:
                 score = self._kill_group(x1, y1)
                 scores.append(score)
-                self._tally(score)
+                self._add_to_score(score)
         return sum(scores)
 
     def _change_turn(self):
-        self._curr_turn = self._next_turn
-        return self._curr_turn
+        if (self._curr_turn == self.BLACK):
+            self._curr_turn = self.WHITE
+        else:
+            self._curr_turn = self.BLACK
 
     @property
     def _state(self):
@@ -114,7 +106,7 @@ class Board(Array):
         except IndexError:
             return None
 
-    def _tally(self, score):
+    def _add_to_score(self, score):
         self._scores[self._curr_turn] += score
 
     def _get_none(self, x, y):
@@ -124,7 +116,7 @@ class Board(Array):
             return None
 
     def _get_surrounding(self, x, y):
-        coords = (
+        liberties = (
             (x, y - 1),
             (x + 1, y),
             (x, y + 1),
@@ -132,7 +124,7 @@ class Board(Array):
         )
         return filter(lambda i: bool(i[0]), [
             (self._get_none(a, b), (a, b))
-            for a, b in coords
+            for a, b in liberties
         ])
 
     def _get_group(self, x, y, traversed):

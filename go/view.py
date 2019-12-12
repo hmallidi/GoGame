@@ -12,7 +12,7 @@ class View(Array):
 
     def __init__(self, board):
         self._board = board
-        self._star_points = self._get_star_points(board._width)
+        self._star_point_coords = self._get_star_point_coords(board._width)
 
         super(View, self).__init__(
             board._width,
@@ -27,35 +27,35 @@ class View(Array):
         ]
 
         # Draw STAR_POINT points
-        for i in self._star_points:
+        for i in self._star_point_coords:
             if self[i] == str(Board.EMPTY):
                 self[i] = self.STAR_POINT
 
     def redraw(self):
         self._reset()
 
-    def _get_star_points(self, width):
-        star_points = tuple()
+    def _get_star_point_coords(self, width):
+        star_point_coordinates = tuple()
 
         if width == 9:
-            star_points = (
+            star_point_coordinates = (
                 (3, 3), (5, 3), (7, 3),
                 (3, 5), (5, 5), (7, 5),
                 (3, 7), (5, 7), (7, 7)
             )
         elif width == 13:
-            star_points = (
+            star_point_coordinates = (
                 (4, 4), (7, 4), (10, 4),
                 (4, 7), (7, 7), (10, 7),
                 (4, 10), (7, 10), (10, 10)
             )
         else:
-            star_points = (
+            star_point_coordinates = (
                 (4, 4), (10, 4), (16, 4),
                 (4, 10), (10, 10), (16, 10),
                 (4, 16), (10, 16), (16, 16)
             )
-        return star_points
+        return star_point_coordinates
 
     def _in_width(self, v):
         return max(1, min(self._width, v))
