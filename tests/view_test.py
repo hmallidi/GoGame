@@ -13,12 +13,12 @@ class ViewTest(unittest.TestCase):
         self.assertEqual(self.v._board, self.b)
         self.assertEqual(self.v._cursor, (1, 1))
 
-        self.assertEqual(self.v._hoshis, (
+        self.assertEqual(self.v._STAR_POINTs, (
             (3, 3), (7, 3), (3, 7), (7, 7), (5, 5),
         ))
 
         e = str(Board.EMPTY)
-        h = View.HOSHI
+        h = View.STAR_POINT
 
         self.assertEqual(self.v._array, [
             [e, e, e, e, e, e, e, e, e],
@@ -32,18 +32,18 @@ class ViewTest(unittest.TestCase):
             [e, e, e, e, e, e, e, e, e],
         ])
 
-    def test_get_hoshis(self):
-        self.assertEqual(self.v._get_hoshis(19), (
+    def test_get_STAR_POINTs(self):
+        self.assertEqual(self.v._get_STAR_POINTs(19), (
             (4, 4), (16, 4), (4, 16), (16, 16),
             (10, 10),
             (4, 10), (10, 4), (16, 10), (10, 16),
         ))
 
-        self.assertEqual(self.v._get_hoshis(18), (
+        self.assertEqual(self.v._get_STAR_POINTs(18), (
             (4, 4), (15, 4), (4, 15), (15, 15),
         ))
 
-        self.assertEqual(self.v._get_hoshis(13), (
+        self.assertEqual(self.v._get_STAR_POINTs(13), (
             (4, 4), (10, 4), (4, 10), (10, 10),
             (7, 7),
         ))

@@ -8,11 +8,11 @@ class View(Array):
     """
     Stores string array which is used to paint the board.
     """
-    HOSHI = '+'
+    STAR_POINT = '+'
 
     def __init__(self, board):
         self._board = board
-        self._hoshis = self._get_hoshis(board._width)
+        self._star_points = self._get_star_points(board._width)
 
         super(View, self).__init__(
             board._width,
@@ -26,45 +26,36 @@ class View(Array):
             for row in self._board._array
         ]
 
-        # Draw hoshi points
-        for i in self._hoshis:
+        # Draw STAR_POINT points
+        for i in self._star_points:
             if self[i] == str(Board.EMPTY):
-                self[i] = self.HOSHI
+                self[i] = self.STAR_POINT
 
     def redraw(self):
         self._reset()
 
-    def _get_hoshis(cls, width):
-        """
-        Calculates and returns hoshi points.
-        """
-        # The x-coordinate of a left hoshi point.  Roughly equivalent to the
-        # floor of the square root of the board width over 0.88.
-        left = top = int(math.floor(math.pow(width, 0.5) / 0.88))
-        right = bottom = width - left + 1
-        middle = width // 2 + 1
+    def _get_star_points(self, width):
+        star_points = tuple()
 
-        hoshis = tuple()
-
-        # Create corner hoshis
-        if width > 3:
-            hoshis += (
-                (left, top), (right, top),
-                (left, bottom), (right, bottom),
+        if width == 9:
+            star_points = (
+                (3, 3), (5, 3), (7, 3),
+                (3, 5), (5, 5), (7, 5),
+                (3, 7), (5, 7), (7, 7)
             )
-
-        # Create center hoshi
-        if width > 7 and width % 2:
-            hoshis += ((middle, middle),)
-
-        # Create middle hoshis
-        if width > 13 and width % 2:
-            hoshis += (
-                (left, middle), (middle, top),
-                (right, middle), (middle, bottom),
+        elif width == 13:
+            star_points = (
+                (4, 4), (7, 4), (10, 4),
+                (4, 7), (7, 7), (10, 7),
+                (4, 10), (7, 10), (10, 10)
             )
-
-        return hoshis
+        else:
+            star_points = (
+                (4, 4), (10, 4), (16, 4),
+                (4, 10), (10, 10), (16, 10),
+                (4, 16), (10, 16), (16, 16)
+            )
+        return star_points
 
     def _in_width(self, v):
         return max(1, min(self._width, v))
