@@ -4,45 +4,42 @@ from copy import copy
 from .array import Array
 
 
-class Board(Array):
-    BLACK = '○'
-    WHITE = '●'
-    EMPTY = '.'
-
-    TURNS = (BLACK, WHITE)
+class Board(object):
+    TURNS = (Array.BLACK, Array.WHITE)
 
     State = namedtuple('State', ['board', 'turn', 'score'])
 
     def __init__(self, size):
-        super(Board, self).__init__(size, size, self.EMPTY)
-
         self._scores = {
-            self.BLACK: 0,
-            self.WHITE: 0,
+            Array.BLACK: 0,
+            Array.WHITE: 0,
         }
 
-        self._curr_turn = self.BLACK
-
+        self._curr_turn = Array.BLACK
+        self._go_board = Array(size, size)
         self._history = []
 
     def get_turn_name(self):
-        if (self._curr_turn == self.BLACK):
+        if (self._curr_turn == Array.BLACK):
             return "Black"
         return "White"
 
+    def get_board_display(self):
+        return str(self._go_board)
+
     def get_score(self):
-        return self._scores[self.BLACK], self._scores[self.WHITE]
+        return self._scores[Array.BLACK], self._scores[Array.WHITE]
 
     def move(self, x, y):
         if (x == 0 and y == 0):
             self._change_turn()
             return
 
-        if self[x, y] is not self.EMPTY:
+        if self._go_board.is_piece(self._go_board[x, y]):
             raise ValueError('Piece is already at those coordinates!')
 
         self._push_history()
-        self[x, y] = self._curr_turn
+        self._go_board[x, y] = self._curr_turn
 
         num_pieces_captured = self._take_pieces(x, y)
 
@@ -59,7 +56,7 @@ class Board(Array):
 
     def _check_for_ko(self):
         try:
-            if self._array == self._history[-2][0]:
+            if self._go_board == self._history[-2][0]:
                 self._pop_history()
                 raise ValueError('Cannot make a redundant move!')
         except IndexError:
@@ -70,10 +67,10 @@ class Board(Array):
         scores = []
 
         opponent_piece_color = None
-        if (self._curr_turn == self.BLACK):
-            opponent_piece_color = self.WHITE
+        if (self._curr_turn == Array.BLACK):
+            opponent_piece_color = Array.WHITE
         else:
-            opponent_piece_color = self.BLACK
+            opponent_piece_color = Array.BLACK
 
         for piece, (x1, y1) in self._get_surrounding(x, y):
             if piece is opponent_piece_color and self.get_num_liberties(x1, y1) == 0:
@@ -83,16 +80,16 @@ class Board(Array):
         return sum(scores)
 
     def _change_turn(self):
-        if (self._curr_turn == self.BLACK):
-            self._curr_turn = self.WHITE
+        if (self._curr_turn == Array.BLACK):
+            self._curr_turn = Array.WHITE
         else:
-            self._curr_turn = self.BLACK
+            self._curr_turn = Array.BLACK
 
     def get_state(self):
-        return self.State(self.copy._array, self._curr_turn, copy(self._scores))
+        return self.State(self._go_board.copy(), self._curr_turn, copy(self._scores))
 
     def _load_state(self, state):
-        self._array, self._curr_turn, self._scores = state
+        self._go_board, self._curr_turn, self._scores = state
 
     def _push_history(self):
         self._history.append(self.get_state())
@@ -110,7 +107,7 @@ class Board(Array):
 
     def _get_none(self, x, y):
         try:
-            return self[x, y]
+            return self._go_board[x, y]
         except ValueError:
             return None
 
@@ -127,7 +124,7 @@ class Board(Array):
         ])
 
     def _get_group(self, x, y, traversed):
-        loc = self[x, y]
+        loc = self._go_board[x, y]
 
         # Get surrounding locations which have the same color and whose
         # coordinates have not already been traversed
@@ -150,27 +147,27 @@ class Board(Array):
             return traversed
 
     def get_group(self, x, y):
-        if self[x, y] not in self.TURNS:
+        if self._go_board[x, y] not in self.TURNS:
             raise ValueError('Can only get group for black or white location')
 
         return self._get_group(x, y, set())
 
     def _kill_group(self, x, y):
-        if self[x, y] not in self.TURNS:
+        if self._go_board[x, y] not in self.TURNS:
             raise ValueError('Can only kill black or white group')
 
         group = self.get_group(x, y)
         score = len(group)
 
         for x1, y1 in group:
-            self[x1, y1] = self.EMPTY
+            self._go_board.remove_piece(x1, y1)
 
         return score
 
     def _get_liberties(self, x, y, traversed):
-        loc = self[x, y]
+        loc = self._go_board[x, y]
 
-        if loc is self.EMPTY:
+        if not self._go_board.is_piece(loc):
             # Return coords of empty location (this counts as a liberty)
             return set([(x, y)])
         else:
@@ -179,7 +176,7 @@ class Board(Array):
             locations = [
                 (p, (a, b))
                 for p, (a, b) in self._get_surrounding(x, y)
-                if (p is loc or p is self.EMPTY) and (a, b) not in traversed
+                if (p is loc or not self._go_board.is_piece(p)) and (a, b) not in traversed
             ]
 
             # Mark current coordinates as having been traversed

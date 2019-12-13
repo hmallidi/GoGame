@@ -26,7 +26,6 @@ def main():
             pass
 
     board = Board(board_size)
-    view = View(board)
     error = None
 
     def move(x,  y):
@@ -34,7 +33,6 @@ def main():
         Makes a move at the given coordinates.
         """
         board.move(x, y)
-        view.redraw()
 
     def end_game():
         """
@@ -66,7 +64,7 @@ def main():
         clear()
 
         print('It is {}\'s turn.\n'.format(board.get_turn_name()))
-        print('{}\n'.format(view))
+        print('{}\n'.format(board.get_board_display()))
 
         black_score, white_score = board.get_score()
         print('Black\'s Points: {}\nWhite\'s Points: {}\n'.format(black_score,

@@ -5,11 +5,6 @@ from .board import Board
 
 
 class View(Array):
-    """
-    Stores string array which is used to paint the board.
-    """
-    STAR_POINT = '+'
-
     def __init__(self, board):
         self._board = board
         self._star_point_coords = self._get_star_point_coords(board._width)
@@ -31,35 +26,6 @@ class View(Array):
 
     def redraw(self):
         self._reset()
-
-    def _get_star_point_coords(self, width):
-        star_point_coordinates = tuple()
-
-        if width == 9:
-            star_point_coordinates = (
-                (3, 3), (5, 3), (7, 3),
-                (3, 5), (5, 5), (7, 5),
-                (3, 7), (5, 7), (7, 7)
-            )
-        elif width == 13:
-            star_point_coordinates = (
-                (4, 4), (7, 4), (10, 4),
-                (4, 7), (7, 7), (10, 7),
-                (4, 10), (7, 10), (10, 10)
-            )
-        else:
-            star_point_coordinates = (
-                (4, 4), (10, 4), (16, 4),
-                (4, 10), (10, 10), (16, 10),
-                (4, 16), (10, 16), (16, 16)
-            )
-        return star_point_coordinates
-
-    def _in_width(self, v):
-        return max(1, min(self._width, v))
-
-    def _in_height(self, v):
-        return max(1, min(self._height, v))
 
     def __str__(self):
         return '\n\n'.join(['    '.join(row) for row in self._array])
