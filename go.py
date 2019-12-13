@@ -10,7 +10,8 @@ from go import Board, View
 
 
 def clear():
-    subprocess.check_call('cls' if platform.system() == 'Windows' else 'clear', shell=True)
+    subprocess.check_call('cls' if platform.system() == 'Windows' else 'clear',
+                          shell=True)
 
 
 def main():
@@ -24,12 +25,10 @@ def main():
         except ValueError:
             pass
 
-    # Initialize board and view
     board = Board(board_size)
     view = View(board)
     error = None
 
-    # User actions
     def move(x,  y):
         """
         Makes a move at the given coordinates.
@@ -44,8 +43,16 @@ def main():
         clear()
 
         black_score, white_score = board.get_score()
-        print('Black\'s Points: {}\nWhite\'s Points: {}\n'.format(black_score, 
+        print('Black\'s Points: {}\nWhite\'s Points: {}\n'.format(black_score,
                                                                   white_score))
+
+        if black_score < white_score:
+            print("\n\nWhite has won!\n\n")
+        elif black_score > white_score:
+            print("\n\nBlack has won!\n\n")
+        else:
+            print("\n\nBlack and White have tied.")
+
         print("\nThe game has ended.")
         time.sleep(5)
         sys.exit(0)
@@ -55,7 +62,6 @@ def main():
             "White": False
     }
 
-    # Main loop
     while True:
         clear()
 

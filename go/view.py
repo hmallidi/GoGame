@@ -20,13 +20,11 @@ class View(Array):
         )
 
     def _reset(self):
-        # Draw pieces from board state
         self._array = [
             [str(loc) for loc in row]
             for row in self._board._array
         ]
 
-        # Draw STAR_POINT points
         for i in self._star_point_coords:
             if self[i] == str(Board.EMPTY):
                 self[i] = self.STAR_POINT

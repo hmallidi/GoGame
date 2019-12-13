@@ -88,18 +88,17 @@ class Board(Array):
         else:
             self._curr_turn = self.BLACK
 
-    @property
-    def _state(self):
+    def get_state(self):
         return self.State(self.copy._array, self._curr_turn, copy(self._scores))
 
     def _load_state(self, state):
         self._array, self._curr_turn, self._scores = state
 
     def _push_history(self):
-        self._history.append(self._state)
+        self._history.append(self.get_state())
 
     def _pop_history(self):
-        current_state = self._state
+        current_state = self.get_state()
         try:
             self._load_state(self._history.pop())
             return current_state
