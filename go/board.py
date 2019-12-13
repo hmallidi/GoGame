@@ -81,7 +81,7 @@ class GoGame(object):
         else:
             opponent_piece_color = GoBoard.BLACK
 
-        for piece, (x1, y1) in self.get_surrounding(x, y):
+        for piece, (x1, y1) in self.get_surrounding_locations(x, y):
             if piece is opponent_piece_color and self.get_num_liberties(x1, y1) == 0:
                 score = self.kill_group(x1, y1)
                 scores.append(score)
@@ -113,51 +113,53 @@ class GoGame(object):
     def add_to_score(self, score):
         self._scores[self._curr_turn] += score
 
-    def get_none(self, x, y):
+    def get_piece(self, x, y):
         try:
             return self._go_board[x, y]
         except ValueError:
             return None
 
-    def get_surrounding(self, x, y):
+    def get_surrounding_locations(self, x, y):
         liberties = (
             (x - 1, y), (x + 1, y),
             (x, y - 1), (x, y + 1),
         )
-        
-        return filter(lambda i: bool(i[0]), [
-            (self.get_none(a, b), (a, b))
-            for a, b in liberties
-        ])
 
-    def get_group(self, x, y, traversed):
+        surrounding = [
+            (self.get_piece(x1, y1), (x1, y1)) for x1, y1 in liberties
+            if self.get_piece(x1, y1) is not None
+        ]
+
+        return surrounding
+
+    def get_group_helper(self, x, y, traversed):
         piece = self._go_board[x, y]
 
-        locations = [
-            (p, (a, b))
-            for p, (a, b) in self.get_surrounding(x, y)
-            if p is piece and (a, b) not in traversed
+        surrounding_locations = [
+            (p, (x1, y1))
+            for p, (x1, y1) in self.get_surrounding_locations(x, y)
+            if p is piece and (x1, y1) not in traversed
         ]
 
         traversed.add((x, y))
 
-        if locations:
+        if surrounding_locations is not None:
             return traversed.union(*[
-                self.get_group(a, b, traversed)
-                for _, (a, b) in locations
+                self.get_group_helper(x1, y1, traversed)
+                for p, (x1, y1) in surrounding_locations
             ])
         else:
             return traversed
 
     def get_group(self, x, y):
         if self._go_board[x, y] is not GoBoard.BLACK and self._go_board[x, y] is not GoBoard.WHITE:
-            raise ValueError('Can only get group for black or white location')
+            raise ValueError('Attempted to get an empty group!')
 
-        return self.get_group(x, y, set())
+        return self.get_group_helper(x, y, set())
 
     def kill_group(self, x, y):
         if self._go_board[x, y] is not GoBoard.BLACK and self._go_board[x, y] is not GoBoard.WHITE:
-            raise ValueError('Can only kill black or white group')
+            raise ValueError('Attempted to kill an empty group!')
 
         group = self.get_group(x, y)
         score = len(group)
@@ -167,29 +169,31 @@ class GoGame(object):
 
         return score
 
-    def get_liberties(self, x, y, traversed):
+    def get_liberties_helper(self, x, y, traversed):
         piece = self._go_board[x, y]
 
         if not self._go_board.is_piece(piece):
             return set([(x, y)])
         else:
             locations = [
-                (p, (a, b)) for p, (a, b) in self.get_surrounding(x, y)
-                if (p is piece or not self._go_board.is_piece(p)) and (a, b) not in traversed
+                (p, (x1, y1)) for p, (x1, y1)
+                in self.get_surrounding_locations(x, y)
+                if (p is piece or not self._go_board.is_piece(p)) and (x1, y1)
+                not in traversed
             ]
 
             traversed.add((x, y))
 
-            if locations is not None:
+            if locations:
                 return set.union(*[
-                    self.get_liberties(a, b, traversed)
+                    self.get_liberties_helper(a, b, traversed)
                     for p, (a, b) in locations
                 ])
             else:
                 return set()
 
     def get_liberties(self, x, y):
-        return self.get_liberties(x, y, set())
+        return self.get_liberties_helper(x, y, set())
 
     def get_num_liberties(self, x, y):
         return len(self.get_liberties(x, y))
