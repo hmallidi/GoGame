@@ -19,6 +19,9 @@ class Array(object):
         for coordinates in self.get_star_point_coords(self._width):
             self[coordinates] = self.STAR_POINT
 
+    def get_width(self):
+        return self._width
+
     def _check_valid(self, x, y):
         if (x < 0 or x >= self._width or y < 0 or y >= self._height):
             raise ValueError('Coordinates ({}, {}) are out of bounds'.format(x + 1, y + 1))
@@ -74,6 +77,17 @@ class Array(object):
 
     def __str__(self):
         return '\n\n'.join(['    '.join(row) for row in self._array])
+
+    def __eq__(self, other_array):
+        if self._width != other_array.get_width():
+            return 0
+
+        for x in range(1, self._width):
+            for y in range(1, self._height):
+                if self[x, y] != other_array[x, y]:
+                    return 0
+
+        return 1
 
     def copy(self):
         new = copy(self)

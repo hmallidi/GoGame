@@ -56,11 +56,10 @@ class Board(object):
 
     def _check_for_ko(self):
         try:
-            if self._go_board == self._history[-2][0]:
+            if self._go_board == self._history[-2].board:
                 self._pop_history()
                 raise ValueError('Cannot make a redundant move!')
         except IndexError:
-            # Insufficient history...let this one slide
             pass
 
     def _take_pieces(self, x, y):
