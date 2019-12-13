@@ -154,16 +154,16 @@ class BoardTest(unittest.TestCase):
         self.bo.move(3, 3)
         self.assertTrue(self.bo.next_turn is b)
 
-    def test_change_turn(self):
+    def testchange_turn(self):
         b = Board.BLACK
         w = Board.WHITE
 
         self.assertEqual(self.bo._turn, b)
-        self.bo._change_turn()
+        self.bo.change_turn()
         self.assertEqual(self.bo._turn, w)
-        self.bo._change_turn()
+        self.bo.change_turn()
         self.assertEqual(self.bo._turn, b)
-        self.bo._change_turn()
+        self.bo.change_turn()
         self.assertEqual(self.bo._turn, w)
 
     def test_state(self):
@@ -221,28 +221,28 @@ class BoardTest(unittest.TestCase):
         self.assertTrue(_state[1] is state[1])
         self.assertTrue(_state[2] is not state[2])
 
-    def test_load_state(self):
+    def testload_turn_info(self):
         state = self.bo._state
 
         self.bo.move(3, 3)
 
         self.assertNotEqual(self.bo._state, state)
 
-        self.bo._load_state(state)
+        self.bo.load_turn_info(state)
 
         self.assertEqual(self.bo._state, state)
 
-    def test_push_history(self):
+    def testsave_curr_turn_info(self):
         self.assertEqual(self.bo._history, [])
 
         state = self.bo._state
 
-        self.bo._push_history()
+        self.bo.save_curr_turn_info()
 
         self.assertTrue(len(self.bo._history) == 1)
         self.assertEqual(self.bo._history[0], state)
 
-    def test_go_to_prev_turn(self):
+    def testgo_to_prev_turn(self):
         self.assertEqual(self.bo._history, [])
 
         state = self.bo._state
@@ -250,7 +250,7 @@ class BoardTest(unittest.TestCase):
 
         self.assertNotEqual(self.bo._state, state)
 
-        self.bo._go_to_prev_turn()
+        self.bo.go_to_prev_turn()
 
         self.assertEqual(self.bo._state, state)
 
@@ -305,13 +305,13 @@ class BoardTest(unittest.TestCase):
         self.assertEqual(self.bo._history, [state1])
         self.assertEqual(self.bo._redo, [])
 
-    def test_add_to_score(self):
+    def testadd_to_score(self):
         self.assertEqual(self.bo.score, {
             'black': 0,
             'white': 0,
         })
 
-        self.bo._add_to_score(100)
+        self.bo.add_to_score(100)
 
         self.assertEqual(self.bo.score, {
             'black': 100,
@@ -319,24 +319,24 @@ class BoardTest(unittest.TestCase):
         })
 
         self.bo.move(3, 3)
-        self.bo._add_to_score(100)
+        self.bo.add_to_score(100)
 
         self.assertEqual(self.bo.score, {
             'black': 100,
             'white': 100,
         })
 
-    def test_get_none(self):
+    def testget_none(self):
         e = Board.EMPTY
         b = Board.BLACK
         w = Board.WHITE
 
-        self.assertTrue(self.bo._get_none(1, 1) is e)
+        self.assertTrue(self.bo.get_none(1, 1) is e)
         self.bo.move(3, 3)
-        self.assertTrue(self.bo._get_none(3, 3) is b)
+        self.assertTrue(self.bo.get_none(3, 3) is b)
         self.bo.move(3, 2)
-        self.assertTrue(self.bo._get_none(3, 2) is w)
-        self.assertTrue(self.bo._get_none(-1, 100) is None)
+        self.assertTrue(self.bo.get_none(3, 2) is w)
+        self.assertTrue(self.bo.get_none(-1, 100) is None)
 
     def test_get_surrounding(self):
         e = Board.EMPTY
