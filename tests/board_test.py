@@ -338,12 +338,12 @@ class BoardTest(unittest.TestCase):
         self.assertTrue(self.bo.get_none(3, 2) is w)
         self.assertTrue(self.bo.get_none(-1, 100) is None)
 
-    def test_get_surrounding(self):
+    def testget_surrounding(self):
         e = Board.EMPTY
         b = Board.BLACK
         w = Board.WHITE
 
-        self.assertEqual(self.bo._get_surrounding(3, 3), [
+        self.assertEqual(self.bo.get_surrounding(3, 3), [
             (e, (3, 2)),
             (e, (4, 3)),
             (e, (3, 4)),
@@ -352,7 +352,7 @@ class BoardTest(unittest.TestCase):
 
         self.bo.move(1, 1)
 
-        self.assertEqual(self.bo._get_surrounding(2, 1), [
+        self.assertEqual(self.bo.get_surrounding(2, 1), [
             (e, (3, 1)),
             (e, (2, 2)),
             (b, (1, 1)),
@@ -360,16 +360,16 @@ class BoardTest(unittest.TestCase):
 
         self.bo.move(2, 1)
 
-        self.assertEqual(self.bo._get_surrounding(1, 1), [
+        self.assertEqual(self.bo.get_surrounding(1, 1), [
             (w, (2, 1)),
             (e, (1, 2)),
         ])
-        self.assertEqual(self.bo._get_surrounding(5, 5), [
+        self.assertEqual(self.bo.get_surrounding(5, 5), [
             (e, (5, 4)),
             (e, (4, 5)),
         ])
 
-    def test_get_group(self):
+    def testget_group(self):
         bo = self.get_test_board_1()[0]
 
         # Assert only black of white group is fetched
@@ -421,21 +421,21 @@ class BoardTest(unittest.TestCase):
             (17, 19),
         ]))
 
-    def test_kill_group(self):
+    def testkill_group(self):
         bo, _, B, W = self.get_test_board_1()
 
         # Assert only black of white group is fetched
-        self.assertRaises(BoardError, bo._kill_group, 3, 1)
-        self.assertRaises(BoardError, bo._kill_group, 10, 10)
+        self.assertRaises(BoardError, bo.kill_group, 3, 1)
+        self.assertRaises(BoardError, bo.kill_group, 10, 10)
 
         # Assert correct upper-left groups
-        self.assertEqual(bo._kill_group(1, 1), 2)
-        self.assertEqual(bo._kill_group(2, 3), 2)
-        self.assertEqual(bo._kill_group(5, 2), 1)
-        self.assertEqual(bo._kill_group(5, 3), 1)
-        self.assertEqual(bo._kill_group(8, 3), 3)
-        self.assertEqual(bo._kill_group(2, 7), 4)
-        self.assertEqual(bo._kill_group(2, 6), 10)
+        self.assertEqual(bo.kill_group(1, 1), 2)
+        self.assertEqual(bo.kill_group(2, 3), 2)
+        self.assertEqual(bo.kill_group(5, 2), 1)
+        self.assertEqual(bo.kill_group(5, 3), 1)
+        self.assertEqual(bo.kill_group(8, 3), 3)
+        self.assertEqual(bo.kill_group(2, 7), 4)
+        self.assertEqual(bo.kill_group(2, 6), 10)
         self.assertEqual(bo._array, [
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
@@ -459,8 +459,8 @@ class BoardTest(unittest.TestCase):
         ])
 
         # Assert correct lower-right groups
-        self.assertEqual(bo._kill_group(11, 13), 22)
-        self.assertEqual(bo._kill_group(14, 13), 17)
+        self.assertEqual(bo.kill_group(11, 13), 22)
+        self.assertEqual(bo.kill_group(14, 13), 17)
         self.assertEqual(bo._array, [
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
@@ -483,7 +483,7 @@ class BoardTest(unittest.TestCase):
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
         ])
 
-    def test_get_liberties(self):
+    def testget_liberties(self):
         bo = self.get_test_board_1()[0]
 
         # Assert only black of white group is fetched

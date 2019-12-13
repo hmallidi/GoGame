@@ -81,9 +81,9 @@ class GoGame(object):
         else:
             opponent_piece_color = GoBoard.BLACK
 
-        for piece, (x1, y1) in self._get_surrounding(x, y):
+        for piece, (x1, y1) in self.get_surrounding(x, y):
             if piece is opponent_piece_color and self.get_num_liberties(x1, y1) == 0:
-                score = self._kill_group(x1, y1)
+                score = self.kill_group(x1, y1)
                 scores.append(score)
                 self.add_to_score(score)
         return sum(scores)
@@ -119,7 +119,7 @@ class GoGame(object):
         except ValueError:
             return None
 
-    def _get_surrounding(self, x, y):
+    def get_surrounding(self, x, y):
         liberties = (
             (x - 1, y), (x + 1, y),
             (x, y - 1), (x, y + 1),
@@ -130,12 +130,12 @@ class GoGame(object):
             for a, b in liberties
         ])
 
-    def _get_group(self, x, y, traversed):
+    def get_group(self, x, y, traversed):
         piece = self._go_board[x, y]
 
         locations = [
             (p, (a, b))
-            for p, (a, b) in self._get_surrounding(x, y)
+            for p, (a, b) in self.get_surrounding(x, y)
             if p is piece and (a, b) not in traversed
         ]
 
@@ -143,7 +143,7 @@ class GoGame(object):
 
         if locations:
             return traversed.union(*[
-                self._get_group(a, b, traversed)
+                self.get_group(a, b, traversed)
                 for _, (a, b) in locations
             ])
         else:
@@ -153,9 +153,9 @@ class GoGame(object):
         if self._go_board[x, y] is not GoBoard.BLACK and self._go_board[x, y] is not GoBoard.WHITE:
             raise ValueError('Can only get group for black or white location')
 
-        return self._get_group(x, y, set())
+        return self.get_group(x, y, set())
 
-    def _kill_group(self, x, y):
+    def kill_group(self, x, y):
         if self._go_board[x, y] is not GoBoard.BLACK and self._go_board[x, y] is not GoBoard.WHITE:
             raise ValueError('Can only kill black or white group')
 
@@ -167,35 +167,29 @@ class GoGame(object):
 
         return score
 
-    def _get_liberties(self, x, y, traversed):
-        loc = self._go_board[x, y]
+    def get_liberties(self, x, y, traversed):
+        piece = self._go_board[x, y]
 
-        if not self._go_board.is_piece(loc):
-            # Return coords of empty location (this counts as a liberty)
+        if not self._go_board.is_piece(piece):
             return set([(x, y)])
         else:
-            # Get surrounding locations which are empty or have the same color
-            # and whose coordinates have not already been traversed
             locations = [
-                (p, (a, b))
-                for p, (a, b) in self._get_surrounding(x, y)
-                if (p is loc or not self._go_board.is_piece(p)) and (a, b) not in traversed
+                (p, (a, b)) for p, (a, b) in self.get_surrounding(x, y)
+                if (p is piece or not self._go_board.is_piece(p)) and (a, b) not in traversed
             ]
 
-            # Mark current coordinates as having been traversed
             traversed.add((x, y))
 
-            # Collect unique coordinates of surrounding liberties
-            if locations:
+            if locations is not None:
                 return set.union(*[
-                    self._get_liberties(a, b, traversed)
-                    for _, (a, b) in locations
+                    self.get_liberties(a, b, traversed)
+                    for p, (a, b) in locations
                 ])
             else:
                 return set()
 
     def get_liberties(self, x, y):
-        return self._get_liberties(x, y, set())
+        return self.get_liberties(x, y, set())
 
     def get_num_liberties(self, x, y):
         return len(self.get_liberties(x, y))
