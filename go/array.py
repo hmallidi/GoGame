@@ -1,7 +1,7 @@
 from copy import copy
 
 
-class Array(object):
+class GoBoard(object):
     BLACK = '○'
     WHITE = '●'
     EMPTY = '.'
@@ -12,7 +12,7 @@ class Array(object):
         self._height = height
 
         self._array = [
-            [Array.EMPTY for i in range(self._width)]
+            [self.EMPTY for i in range(self._width)]
             for j in range(self._height)
         ]
 

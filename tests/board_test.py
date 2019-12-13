@@ -242,7 +242,7 @@ class BoardTest(unittest.TestCase):
         self.assertTrue(len(self.bo._history) == 1)
         self.assertEqual(self.bo._history[0], state)
 
-    def test_pop_history(self):
+    def test_go_to_prev_turn(self):
         self.assertEqual(self.bo._history, [])
 
         state = self.bo._state
@@ -250,7 +250,7 @@ class BoardTest(unittest.TestCase):
 
         self.assertNotEqual(self.bo._state, state)
 
-        self.bo._pop_history()
+        self.bo._go_to_prev_turn()
 
         self.assertEqual(self.bo._state, state)
 

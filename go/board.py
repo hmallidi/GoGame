@@ -1,26 +1,26 @@
 from collections import namedtuple
 from copy import copy
 
-from .array import Array
+from .array import GoBoard
 
 
-class Board(object):
-    TURNS = (Array.BLACK, Array.WHITE)
+class GoGame(object):
+    TURNS = (GoBoard.BLACK, GoBoard.WHITE)
 
     State = namedtuple('State', ['board', 'turn', 'score'])
 
     def __init__(self, size):
         self._scores = {
-            Array.BLACK: 0,
-            Array.WHITE: 0,
+            GoBoard.BLACK: 0,
+            GoBoard.WHITE: 0,
         }
 
-        self._curr_turn = Array.BLACK
-        self._go_board = Array(size, size)
+        self._curr_turn = GoBoard.BLACK
+        self._go_board = GoBoard(size, size)
         self._history = []
 
     def get_turn_name(self):
-        if (self._curr_turn == Array.BLACK):
+        if (self._curr_turn == GoBoard.BLACK):
             return "Black"
         return "White"
 
@@ -28,7 +28,7 @@ class Board(object):
         return str(self._go_board)
 
     def get_score(self):
-        return self._scores[Array.BLACK], self._scores[Array.WHITE]
+        return self._scores[GoBoard.BLACK], self._scores[GoBoard.WHITE]
 
     def move(self, x, y):
         if (x == 0 and y == 0):
@@ -51,13 +51,13 @@ class Board(object):
 
     def _check_if_suicidal(self, x, y):
         if self.get_num_liberties(x, y) == 0:
-            self._pop_history()
+            self._go_to_prev_turn()
             raise ValueError('Suicidal Move! There are no liberties there!')
 
     def _check_for_ko(self):
         try:
             if self._go_board == self._history[-2].board:
-                self._pop_history()
+                self._go_to_prev_turn()
                 raise ValueError('Cannot make a redundant move!')
         except IndexError:
             pass
@@ -66,10 +66,10 @@ class Board(object):
         scores = []
 
         opponent_piece_color = None
-        if (self._curr_turn == Array.BLACK):
-            opponent_piece_color = Array.WHITE
+        if (self._curr_turn == GoBoard.BLACK):
+            opponent_piece_color = GoBoard.WHITE
         else:
-            opponent_piece_color = Array.BLACK
+            opponent_piece_color = GoBoard.BLACK
 
         for piece, (x1, y1) in self._get_surrounding(x, y):
             if piece is opponent_piece_color and self.get_num_liberties(x1, y1) == 0:
@@ -79,10 +79,10 @@ class Board(object):
         return sum(scores)
 
     def _change_turn(self):
-        if (self._curr_turn == Array.BLACK):
-            self._curr_turn = Array.WHITE
+        if (self._curr_turn == GoBoard.BLACK):
+            self._curr_turn = GoBoard.WHITE
         else:
-            self._curr_turn = Array.BLACK
+            self._curr_turn = GoBoard.BLACK
 
     def get_state(self):
         return self.State(self._go_board.copy(), self._curr_turn, copy(self._scores))
@@ -93,7 +93,7 @@ class Board(object):
     def _push_history(self):
         self._history.append(self.get_state())
 
-    def _pop_history(self):
+    def _go_to_prev_turn(self):
         current_state = self.get_state()
         try:
             self._load_state(self._history.pop())
