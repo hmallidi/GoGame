@@ -1,4 +1,4 @@
-from .go_board import GoBoard
+from go_board import GoBoard
 
 
 class GoGame(object):

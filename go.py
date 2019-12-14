@@ -6,7 +6,7 @@ import platform
 import subprocess
 import time
 
-from go import GoGame
+from go_game import GoGame
 
 
 def clear():
@@ -92,5 +92,5 @@ def main():
             time.sleep(2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
