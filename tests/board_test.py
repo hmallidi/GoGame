@@ -20,7 +20,7 @@ class BoardTest(unittest.TestCase):
 
         bo = Board(19)
 
-        bo._array = [
+        bo._board = [
             [B, B, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, _, W, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, W, _, W, B, W, _, B, _, _, _, _, _, _, _, _, _, _, _],
@@ -52,7 +52,7 @@ class BoardTest(unittest.TestCase):
 
         bo = Board(19)
 
-        bo._array = [
+        bo._board = [
             [B, B, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, _, W, _, _, _, _, _, _, W, B, _, _, _, _, _, _],
             [_, W, _, W, _, W, _, B, _, _, W, _, W, B, _, _, _, _, _],
@@ -81,7 +81,7 @@ class BoardTest(unittest.TestCase):
         b = Board.BLACK
         w = Board.WHITE
 
-        self.assertEqual(self.bo._array, [
+        self.assertEqual(self.bo._board, [
             [e, e, e, e, e],
             [e, e, e, e, e],
             [e, e, e, e, e],
@@ -113,7 +113,7 @@ class BoardTest(unittest.TestCase):
             'white': 0,
         })
 
-        self.bo._array = [
+        self.bo._board = [
             [w, b, e, e, e],
             [e, e, e, e, e],
             [e, e, e, e, e],
@@ -128,7 +128,7 @@ class BoardTest(unittest.TestCase):
         })
 
         self.setUp()
-        self.bo._array = [
+        self.bo._board = [
             [w, b, e, e, e],
             [w, b, e, e, e],
             [e, w, b, e, e],
@@ -436,7 +436,7 @@ class BoardTest(unittest.TestCase):
         self.assertEqual(bo.capture_group(8, 3), 3)
         self.assertEqual(bo.capture_group(2, 7), 4)
         self.assertEqual(bo.capture_group(2, 6), 10)
-        self.assertEqual(bo._array, [
+        self.assertEqual(bo._board, [
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, W, _, W, _, _, _, _, _, _, _, _, _, _, _, _, _],
@@ -461,7 +461,7 @@ class BoardTest(unittest.TestCase):
         # Assert correct lower-right groups
         self.assertEqual(bo.capture_group(11, 13), 22)
         self.assertEqual(bo.capture_group(14, 13), 17)
-        self.assertEqual(bo._array, [
+        self.assertEqual(bo._board, [
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, W, _, W, _, _, _, _, _, _, _, _, _, _, _, _, _],

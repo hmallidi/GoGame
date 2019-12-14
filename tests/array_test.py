@@ -13,7 +13,7 @@ class ArrayTest(unittest.TestCase):
         self.assertEqual(a._empty, 0)
 
         self.assertEqual(
-            a._array,
+            a._board,
             [
                 [0, 0, 0, 0],
                 [0, 0, 0, 0],
@@ -28,7 +28,7 @@ class ArrayTest(unittest.TestCase):
         a[3, 1] = 2
 
         self.assertEqual(
-            a._array,
+            a._board,
             [
                 [1, 0, 2, 0],
                 [0, 0, 0, 0],

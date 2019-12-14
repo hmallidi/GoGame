@@ -1,4 +1,4 @@
-from copy import copy
+import copy
 
 
 class GoBoard(object):
@@ -11,7 +11,7 @@ class GoBoard(object):
         self._width = width
         self._height = height
 
-        self._array = [
+        self._board = [
             [self.EMPTY for i in range(self._width)]
             for j in range(self._height)
         ]
@@ -31,14 +31,14 @@ class GoBoard(object):
         x, y = x - 1, y - 1
 
         self._check_valid(x, y)
-        return self._array[y][x]
+        return self._board[y][x]
 
     def __setitem__(self, coordinates, piece):
         x, y = coordinates
         x, y = x - 1, y - 1
 
         self._check_valid(x, y)
-        self._array[y][x] = piece
+        self._board[y][x] = piece
 
     def remove_piece(self, x, y):
         if self.is_star_point(x, y):
@@ -75,21 +75,22 @@ class GoBoard(object):
             )
         return star_point_coordinates
 
-    def __str__(self):
-        return '\n\n'.join(['    '.join(row) for row in self._array])
+    def clone_board(self):
+        board_clone = copy.copy(self)
+        board_clone._board = [row.copy() for row in self._board]
+        
+        return board_clone
 
-    def __eq__(self, other_array):
-        if self._width != other_array.get_width():
+    def __str__(self):
+        return '\n\n'.join(['    '.join(row) for row in self._board])
+
+    def __eq__(self, other_board):
+        if self._width != other_board.get_width():
             return 0
 
         for x in range(1, self._width):
             for y in range(1, self._height):
-                if self[x, y] != other_array[x, y]:
+                if self[x, y] != other_board[x, y]:
                     return 0
 
         return 1
-
-    def copy(self):
-        new = copy(self)
-        new._array = [copy(row) for row in self._array]
-        return new

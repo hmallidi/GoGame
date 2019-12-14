@@ -20,7 +20,7 @@ class ViewTest(unittest.TestCase):
         e = str(Board.EMPTY)
         h = View.STAR_POINT
 
-        self.assertEqual(self.v._array, [
+        self.assertEqual(self.v._board, [
             [e, e, e, e, e, e, e, e, e],
             [e, e, e, e, e, e, e, e, e],
             [e, e, h, e, e, e, h, e, e],
