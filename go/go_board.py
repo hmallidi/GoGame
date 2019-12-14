@@ -1,4 +1,4 @@
-from copy import copy
+import copy
 
 
 class GoBoard(object):
@@ -10,6 +10,7 @@ class GoBoard(object):
     def __init__(self, width, height):
         self._width = width
         self._height = height
+
         self._board = [
             [self.EMPTY for i in range(self._width)]
             for j in range(self._height)
@@ -74,6 +75,12 @@ class GoBoard(object):
             )
         return star_point_coordinates
 
+    def clone_board(self):
+        board_clone = copy.copy(self)
+        board_clone._board = [row.copy() for row in self._board]
+        
+        return board_clone
+
     def __str__(self):
         return '\n\n'.join(['    '.join(row) for row in self._board])
 
@@ -87,8 +94,3 @@ class GoBoard(object):
                     return 0
 
         return 1
-
-    def copy(self):
-        new = copy(self)
-        new._board = [copy(row) for row in self._board]
-        return new

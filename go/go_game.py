@@ -108,7 +108,7 @@ class GoGame(object):
             self._curr_turn = GoBoard.BLACK
 
     def get_curr_turn_info(self):
-        return self.TurnInfo(self._go_board.copy(), self._curr_turn,
+        return self.TurnInfo(self._go_board.clone_board(), self._curr_turn,
                              self._scores.copy())
 
     def load_turn_info(self, turn_info):
@@ -146,17 +146,17 @@ class GoGame(object):
                 not in traversed
             ]
 
+            traversed.add((x, y))
+
             if len(surrounding_locations) == 0:
                 return set()
-
-            traversed.add((x, y))
 
             more_locations = [
                 self.get_group_liberties_helper(x1, y1, traversed)
                 for p, (x1, y1) in surrounding_locations
             ]
 
-            return set().union(*more_locations)
+            return set.union(*more_locations)
 
     def get_group_helper(self, x, y, traversed):
         piece = self._go_board[x, y]
@@ -167,10 +167,10 @@ class GoGame(object):
             if p is piece and (x1, y1) not in traversed
         ]
 
-        if len(surrounding_locations) == 0:
-            return set()
-
         traversed.add((x, y))
+
+        if len(surrounding_locations) == 0:
+            return traversed
 
         more_locations = [
             self.get_group_helper(x1, y1, traversed)

@@ -1,2 +1,2 @@
-from .array import *
-from .board import *
+from .go_board import *
+from .go_game import *
