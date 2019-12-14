@@ -24,7 +24,8 @@ class GoBoard(object):
 
     def _check_valid(self, x, y):
         if (x < 0 or x >= self._width or y < 0 or y >= self._height):
-            raise ValueError('Coordinates ({}, {}) are out of bounds'.format(x + 1, y + 1))
+            raise ValueError('Coordinates ({}, {}) are out of bounds'.
+                             format(x + 1, y + 1))
 
     def __getitem__(self, coordinates):
         x, y = coordinates
@@ -78,7 +79,7 @@ class GoBoard(object):
     def clone_board(self):
         board_clone = copy.copy(self)
         board_clone._board = [row.copy() for row in self._board]
-        
+
         return board_clone
 
     def __str__(self):

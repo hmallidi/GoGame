@@ -91,7 +91,9 @@ class GoGame(object):
             opponent_piece_color = GoBoard.BLACK
 
         for piece, (x1, y1) in self.get_surrounding_locations(x, y):
-            if piece is opponent_piece_color and self.get_num_liberties(x1, y1) == 0:
+            if (piece is opponent_piece_color and
+               self.get_num_liberties(x1, y1) == 0):
+
                 num_captured = len(self.get_group(x1, y1))
                 if num_captured > 0:
                     no_pieces_captured = False
@@ -179,13 +181,6 @@ class GoGame(object):
 
         return traversed.union(*more_locations)
 
-    def capture_group(self, x, y):
-        if not self._go_board.is_piece(self._go_board[x, y]):
-            raise ValueError('Attempted to kill an empty group!')
-
-        for x1, y1 in self.get_group(x, y):
-            self._go_board.remove_piece(x1, y1)
-
     def get_group_liberties(self, x, y):
         return self.get_group_liberties_helper(x, y, set())
 
@@ -194,6 +189,13 @@ class GoGame(object):
             raise ValueError('Attempted to get an empty group!')
 
         return self.get_group_helper(x, y, set())
+
+    def capture_group(self, x, y):
+        if not self._go_board.is_piece(self._go_board[x, y]):
+            raise ValueError('Attempted to kill an empty group!')
+
+        for x1, y1 in self.get_group(x, y):
+            self._go_board.remove_piece(x1, y1)
 
     def get_num_liberties(self, x, y):
         return len(self.get_group_liberties(x, y))
