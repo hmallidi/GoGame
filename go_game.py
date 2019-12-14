@@ -8,18 +8,18 @@ class GoGame(object):
         def __init__(self, go_board, turn, scores):
             self._go_board = go_board
             self._turn = turn
-            self._scores = scores
+            self._stones_captured = scores
 
         def get_board(self):
             return self._go_board
 
         def get_info(self):
-            return (self._go_board, self._turn, self._scores)
+            return (self._go_board, self._turn, self._stones_captured)
 
     def __init__(self, size):
         self._go_board = GoBoard(size, size)
         self._curr_turn = GoBoard.BLACK
-        self._scores = {
+        self._stones_captured = {
             GoBoard.BLACK: 0,
             GoBoard.WHITE: 0,
         }
@@ -39,12 +39,6 @@ class GoGame(object):
             return self._go_board[x, y]
         except ValueError:
             return None
-
-    def get_score(self):
-        return self._scores[GoBoard.BLACK], self._scores[GoBoard.WHITE]
-
-    def add_to_score(self, score):
-        self._scores[self._curr_turn] += score
 
     def move(self, x, y):
         if (x == 0 and y == 0):
@@ -99,7 +93,7 @@ class GoGame(object):
                     no_pieces_captured = False
 
                 self.capture_group(x1, y1)
-                self.add_to_score(num_captured)
+                self.add_to_stones_captured(num_captured)
 
         return no_pieces_captured
 
@@ -111,10 +105,11 @@ class GoGame(object):
 
     def get_curr_turn_info(self):
         return self.TurnInfo(self._go_board.clone_board(), self._curr_turn,
-                             self._scores.copy())
+                             self._stones_captured.copy())
 
     def load_turn_info(self, turn_info):
-        self._go_board, self._curr_turn, self._scores = turn_info.get_info()
+        (self._go_board, self._curr_turn,
+         self._stones_captured) = turn_info.get_info()
 
     def save_curr_turn_info(self):
         self._turns.append(self.get_curr_turn_info())
@@ -199,3 +194,21 @@ class GoGame(object):
 
     def get_num_liberties(self, x, y):
         return len(self.get_group_liberties(x, y))
+
+    def get_stones_captured(self):
+        return (self._stones_captured[GoBoard.BLACK],
+                self._stones_captured[GoBoard.WHITE])
+
+    def add_to_stones_captured(self, score):
+        self._stones_captured[self._curr_turn] += score
+
+    def get_num_stones_on_board(self):
+        num_black = 0
+        num_white = 0
+        for x in range(1, self._go_board.get_width() + 1):
+            for y in range(1, self._go_board.get_width() + 1):
+                if self._go_board[x, y] == GoBoard.BLACK:
+                    num_black += 1
+                elif self._go_board[x, y] == GoBoard.WHITE:
+                    num_white += 1
+        return (num_black, num_white)

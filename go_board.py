@@ -89,8 +89,8 @@ class GoBoard(object):
         if self._width != other_board.get_width():
             return 0
 
-        for x in range(1, self._width):
-            for y in range(1, self._height):
+        for x in range(1, self._width + 1):
+            for y in range(1, self._height + 1):
                 if self[x, y] != other_board[x, y]:
                     return 0
 
