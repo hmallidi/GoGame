@@ -91,7 +91,7 @@ class BoardTest(unittest.TestCase):
 
         self.assertTrue(self.bo._turn is b)
         self.assertEqual(self.bo._scores, {b: 0, w: 0})
-        self.assertEqual(self.bo._history, [])
+        self.assertEqual(self.bo._turns, [])
         self.assertEqual(self.bo._redo, [])
 
     def test_turn(self):
@@ -233,17 +233,17 @@ class BoardTest(unittest.TestCase):
         self.assertEqual(self.bo._state, state)
 
     def testsave_curr_turn_info(self):
-        self.assertEqual(self.bo._history, [])
+        self.assertEqual(self.bo._turns, [])
 
         state = self.bo._state
 
         self.bo.save_curr_turn_info()
 
-        self.assertTrue(len(self.bo._history) == 1)
-        self.assertEqual(self.bo._history[0], state)
+        self.assertTrue(len(self.bo._turns) == 1)
+        self.assertEqual(self.bo._turns[0], state)
 
     def testgo_to_prev_turn(self):
-        self.assertEqual(self.bo._history, [])
+        self.assertEqual(self.bo._turns, [])
 
         state = self.bo._state
         self.bo.move(3, 3)
@@ -257,13 +257,13 @@ class BoardTest(unittest.TestCase):
     def test_undo(self):
         self.assertRaises(BoardError, self.bo.undo)
         self.assertEqual(self.bo._redo, [])
-        self.assertEqual(self.bo._history, [])
+        self.assertEqual(self.bo._turns, [])
 
         state1 = self.bo._state
         self.bo.move(3, 3)
 
         self.assertNotEqual(self.bo._state, state1)
-        self.assertEqual(self.bo._history, [state1])
+        self.assertEqual(self.bo._turns, [state1])
         self.assertEqual(self.bo._redo, [])
 
         state2 = self.bo._state
@@ -273,19 +273,19 @@ class BoardTest(unittest.TestCase):
         self.assertEqual(pop_state, state2)
         self.assertNotEqual(self.bo._state, pop_state)
 
-        self.assertEqual(self.bo._history, [])
+        self.assertEqual(self.bo._turns, [])
         self.assertEqual(self.bo._redo, [pop_state])
 
     def test_redo(self):
         self.assertRaises(BoardError, self.bo.undo)
         self.assertEqual(self.bo._redo, [])
-        self.assertEqual(self.bo._history, [])
+        self.assertEqual(self.bo._turns, [])
 
         state1 = self.bo._state
         self.bo.move(3, 3)
 
         self.assertNotEqual(self.bo._state, state1)
-        self.assertEqual(self.bo._history, [state1])
+        self.assertEqual(self.bo._turns, [state1])
         self.assertEqual(self.bo._redo, [])
 
         state2 = self.bo._state
@@ -295,14 +295,14 @@ class BoardTest(unittest.TestCase):
         self.assertEqual(pop_state, state2)
         self.assertNotEqual(self.bo._state, pop_state)
 
-        self.assertEqual(self.bo._history, [])
+        self.assertEqual(self.bo._turns, [])
         self.assertEqual(self.bo._redo, [pop_state])
 
         self.bo.redo()
 
         self.assertEqual(self.bo._state, state2)
         self.assertNotEqual(self.bo._state, state1)
-        self.assertEqual(self.bo._history, [state1])
+        self.assertEqual(self.bo._turns, [state1])
         self.assertEqual(self.bo._redo, [])
 
     def testadd_to_score(self):
@@ -421,21 +421,21 @@ class BoardTest(unittest.TestCase):
             (17, 19),
         ]))
 
-    def testkill_group(self):
+    def testcapture_group(self):
         bo, _, B, W = self.get_test_board_1()
 
         # Assert only black of white group is fetched
-        self.assertRaises(BoardError, bo.kill_group, 3, 1)
-        self.assertRaises(BoardError, bo.kill_group, 10, 10)
+        self.assertRaises(BoardError, bo.capture_group, 3, 1)
+        self.assertRaises(BoardError, bo.capture_group, 10, 10)
 
         # Assert correct upper-left groups
-        self.assertEqual(bo.kill_group(1, 1), 2)
-        self.assertEqual(bo.kill_group(2, 3), 2)
-        self.assertEqual(bo.kill_group(5, 2), 1)
-        self.assertEqual(bo.kill_group(5, 3), 1)
-        self.assertEqual(bo.kill_group(8, 3), 3)
-        self.assertEqual(bo.kill_group(2, 7), 4)
-        self.assertEqual(bo.kill_group(2, 6), 10)
+        self.assertEqual(bo.capture_group(1, 1), 2)
+        self.assertEqual(bo.capture_group(2, 3), 2)
+        self.assertEqual(bo.capture_group(5, 2), 1)
+        self.assertEqual(bo.capture_group(5, 3), 1)
+        self.assertEqual(bo.capture_group(8, 3), 3)
+        self.assertEqual(bo.capture_group(2, 7), 4)
+        self.assertEqual(bo.capture_group(2, 6), 10)
         self.assertEqual(bo._array, [
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
@@ -459,8 +459,8 @@ class BoardTest(unittest.TestCase):
         ])
 
         # Assert correct lower-right groups
-        self.assertEqual(bo.kill_group(11, 13), 22)
-        self.assertEqual(bo.kill_group(14, 13), 17)
+        self.assertEqual(bo.capture_group(11, 13), 22)
+        self.assertEqual(bo.capture_group(14, 13), 17)
         self.assertEqual(bo._array, [
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
@@ -483,7 +483,7 @@ class BoardTest(unittest.TestCase):
             [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
         ])
 
-    def testget_liberties(self):
+    def testget_group_liberties(self):
         bo = self.get_test_board_1()[0]
 
         # Assert only black of white group is fetched
@@ -491,29 +491,29 @@ class BoardTest(unittest.TestCase):
         # self.assertRaises(BoardError, bo.get_group, 10, 10)
 
         # Assert empty location returns self as liberty
-        self.assertEqual(bo.get_liberties(3, 1), set([(3, 1)]))
+        self.assertEqual(bo.get_group_liberties(3, 1), set([(3, 1)]))
 
         # Assert correct upper-left groups
-        self.assertEqual(bo.get_liberties(1, 1), set([
+        self.assertEqual(bo.get_group_liberties(1, 1), set([
             (1, 2), (2, 2), (3, 1),
         ]))
-        self.assertEqual(bo.get_liberties(2, 1), set([
+        self.assertEqual(bo.get_group_liberties(2, 1), set([
             (1, 2), (2, 2), (3, 1),
         ]))
-        self.assertEqual(bo.get_liberties(2, 3), set([
+        self.assertEqual(bo.get_group_liberties(2, 3), set([
             (1, 3), (1, 4), (2, 2), (2, 5), (3, 3), (3, 4),
         ]))
-        self.assertEqual(bo.get_liberties(5, 2), set([
+        self.assertEqual(bo.get_group_liberties(5, 2), set([
             (4, 2), (5, 1), (6, 2),
         ]))
-        self.assertEqual(bo.get_liberties(5, 3), set())
-        self.assertEqual(bo.get_liberties(8, 3), set([
+        self.assertEqual(bo.get_group_liberties(5, 3), set())
+        self.assertEqual(bo.get_group_liberties(8, 3), set([
             (7, 3), (7, 4), (8, 2), (8, 5), (9, 3), (9, 5), (10, 4),
         ]))
-        self.assertEqual(bo.get_liberties(2, 7), set([
+        self.assertEqual(bo.get_group_liberties(2, 7), set([
             (1, 7), (1, 8), (2, 9),
         ]))
-        self.assertEqual(bo.get_liberties(2, 6), set([
+        self.assertEqual(bo.get_group_liberties(2, 6), set([
             (1, 6),
             (2, 5), (2, 9),
             (3, 5), (3, 10),
@@ -524,14 +524,14 @@ class BoardTest(unittest.TestCase):
         ]))
 
         # # Assert correct lower-right groups
-        self.assertEqual(bo.get_liberties(11, 13), set([
+        self.assertEqual(bo.get_group_liberties(11, 13), set([
             (10, 13), (10, 14), (10, 15), (10, 16), (10, 17), (10, 18), (10, 19),
             (11, 12),
             (12, 12), (12, 14), (12, 18), (12, 19),
             (13, 12),
             (15, 16),
         ]))
-        self.assertEqual(bo.get_liberties(14, 13), set([
+        self.assertEqual(bo.get_group_liberties(14, 13), set([
             (14, 12),
             (15, 12), (15, 14), (15, 15), (15, 16),
             (16, 12),
