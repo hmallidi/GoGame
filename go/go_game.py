@@ -1,7 +1,4 @@
-from collections import namedtuple
-from copy import copy
-
-from .array import GoBoard
+from .go_board import GoBoard
 
 
 class GoGame(object):
@@ -112,7 +109,7 @@ class GoGame(object):
 
     def get_curr_turn_info(self):
         return self.TurnInfo(self._go_board.copy(), self._curr_turn,
-                             copy(self._scores))
+                             self._scores.copy())
 
     def load_turn_info(self, turn_info):
         self._go_board, self._curr_turn, self._scores = turn_info.get_info()
@@ -159,7 +156,7 @@ class GoGame(object):
                 for p, (x1, y1) in surrounding_locations
             ]
 
-            return set.union(*more_locations)
+            return set().union(*more_locations)
 
     def get_group_helper(self, x, y, traversed):
         piece = self._go_board[x, y]
@@ -170,15 +167,17 @@ class GoGame(object):
             if p is piece and (x1, y1) not in traversed
         ]
 
+        if len(surrounding_locations) == 0:
+            return set()
+
         traversed.add((x, y))
 
-        if surrounding_locations:
-            return traversed.union(*[
-                self.get_group_helper(x1, y1, traversed)
-                for p, (x1, y1) in surrounding_locations
-            ])
-        else:
-            return traversed
+        more_locations = [
+            self.get_group_helper(x1, y1, traversed)
+            for p, (x1, y1) in surrounding_locations
+        ]
+
+        return traversed.union(*more_locations)
 
     def capture_group(self, x, y):
         if not self._go_board.is_piece(self._go_board[x, y]):
